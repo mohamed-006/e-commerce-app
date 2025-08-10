@@ -1,5 +1,6 @@
 package com.medali.ecommerce.customer;
 
+import com.medali.ecommerce.exception.CustomerNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +25,7 @@ public class CustomerService {
 
     public void updateCustomer(@Valid CustomerRequest request) {
         var customer = repository.findById(request.id())
-                .orElseThrow(() -> new CustomerNotfoundException(
+                .orElseThrow(() -> new CustomerNotFoundException(
                         format("Cannot update customer:: %s, customer not found", request.id())
                 ));
         mergeCustomer(request, customer);
@@ -60,14 +61,14 @@ public class CustomerService {
     public CustomerResponse findById(String customerId) {
         return repository.findById(customerId)
                 .map(mapper::fromCustomer)
-                .orElseThrow(() -> new CustomerNotfoundException(
+                .orElseThrow(() -> new CustomerNotFoundException(
                         format("Customer with id:: %s not found", customerId)
                 ));
     }
 
     public void deleteCustomer(String customerId) {
         if (!repository.existsById(customerId)) {
-            throw new CustomerNotfoundException(
+            throw new CustomerNotFoundException(
                     format("Cannot delete customer:: %s, customer not found", customerId)
             );
         }
